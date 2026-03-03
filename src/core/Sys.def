@@ -1,0 +1,18 @@
+DEFINITION MODULE FOR "C" Sys;
+FROM SYSTEM IMPORT ADDRESS;
+
+(* File I/O — handle-based *)
+PROCEDURE m2sys_fopen(path: ADDRESS; mode: ADDRESS): INTEGER;
+PROCEDURE m2sys_fclose(handle: INTEGER): INTEGER;
+PROCEDURE m2sys_fread_bytes(handle: INTEGER; buf: ADDRESS; maxLen: INTEGER): INTEGER;
+PROCEDURE m2sys_fwrite_bytes(handle: INTEGER; data: ADDRESS; len: INTEGER): INTEGER;
+PROCEDURE m2sys_fseek(handle: INTEGER; offset: LONGINT; whence: INTEGER): INTEGER;
+
+(* File system queries *)
+PROCEDURE m2sys_file_exists(path: ADDRESS): INTEGER;
+PROCEDURE m2sys_file_size(path: ADDRESS): LONGINT;
+
+(* Path utilities *)
+PROCEDURE m2sys_basename(path: ADDRESS; outBuf: ADDRESS; outSize: INTEGER);
+
+END Sys.

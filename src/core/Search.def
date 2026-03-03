@@ -1,0 +1,16 @@
+DEFINITION MODULE Search;
+(* Byte-pattern search engine for hex editor.
+   Supports hex byte patterns and ASCII string search.
+   Linear scan using Doc.GetByte — no allocation. *)
+
+FROM Doc IMPORT Document;
+
+(* Search forward from fromOff+1, wrapping to 0 if needed.
+   Hex mode: pat contains hex chars ("FF0A"), parsed into byte pairs.
+   ASCII mode: pat contains literal chars to match.
+   Returns TRUE if found, with foundOff/foundLen set. *)
+PROCEDURE FindNext(VAR d: Document; pat: ARRAY OF CHAR; patLen: INTEGER;
+                   isHex: BOOLEAN; fromOff: CARDINAL;
+                   VAR foundOff, foundLen: CARDINAL): BOOLEAN;
+
+END Search.

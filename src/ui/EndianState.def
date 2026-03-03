@@ -1,0 +1,13 @@
+DEFINITION MODULE EndianState;
+(* Shared endianness state — written by Keymap, read by View.
+   Exists to avoid circular dependency between Keymap and View. *)
+
+TYPE
+  Endianness = (LittleEndian, BigEndian);
+
+PROCEDURE SetEndianness(e: Endianness);
+PROCEDURE GetEndianness(): Endianness;
+PROCEDURE ToggleEndianness;
+PROCEDURE IsLittleEndian(): BOOLEAN;
+
+END EndianState.

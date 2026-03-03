@@ -1,0 +1,24 @@
+DEFINITION MODULE ReplaceState;
+(* Shared replace state — written by Keymap, read by View.
+   Exists to avoid circular dependency between Keymap and View. *)
+
+TYPE
+  ReplacePhase = (PhaseSearch, PhaseReplace, PhaseConfirm);
+
+PROCEDURE SetReplaceMode(on: BOOLEAN);
+PROCEDURE SetReplacePhase(p: ReplacePhase);
+PROCEDURE SetSearchBuf(VAR buf: ARRAY OF CHAR; len: INTEGER);
+PROCEDURE SetReplaceBuf(VAR buf: ARRAY OF CHAR; len: INTEGER);
+PROCEDURE SetIsHex(hex: BOOLEAN);
+PROCEDURE SetNotFound(nf: BOOLEAN);
+
+PROCEDURE IsReplaceMode(): BOOLEAN;
+PROCEDURE GetReplacePhase(): ReplacePhase;
+PROCEDURE GetSearchBuf(VAR buf: ARRAY OF CHAR);
+PROCEDURE GetSearchLen(): INTEGER;
+PROCEDURE GetReplaceBuf(VAR buf: ARRAY OF CHAR);
+PROCEDURE GetReplaceLen(): INTEGER;
+PROCEDURE GetIsHex(): BOOLEAN;
+PROCEDURE ReplaceNotFound(): BOOLEAN;
+
+END ReplaceState.

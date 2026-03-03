@@ -1,0 +1,74 @@
+DEFINITION MODULE Doc;
+(* Document model — wraps ByteStore and tracks cursor/selection state.
+   No UI dependency. Pure data model. *)
+
+FROM ByteStore IMPORT Store;
+FROM Cmd IMPORT CmdHistory;
+
+CONST
+  BytesPerRow = 16;
+  NoSelection = MAX(CARDINAL);
+
+TYPE
+  EditMode = (ModeHex, ModeAscii, ModeBin);
+
+  Document = RECORD
+    store:       Store;
+    history:     CmdHistory;
+    cursor:      CARDINAL;    (* byte offset of cursor *)
+    selAnchor:   CARDINAL;    (* NoSelection if no selection active *)
+    topRow:      CARDINAL;    (* first visible row *)
+    nibblePhase: CARDINAL;    (* 0 = high nibble, 1 = low nibble *)
+    editMode:    EditMode;
+    binBitPos:   CARDINAL;    (* 0=MSB/bit7 .. 7=LSB/bit0 *)
+    visibleRows: CARDINAL;    (* set by view based on window height *)
+    fileName:    ARRAY [0..255] OF CHAR;
+  END;
+
+(* File operations *)
+PROCEDURE Open(VAR d: Document; path: ARRAY OF CHAR): BOOLEAN;
+PROCEDURE Close(VAR d: Document);
+PROCEDURE Save(VAR d: Document): BOOLEAN;
+PROCEDURE FileLen(VAR d: Document): CARDINAL;
+PROCEDURE TotalRows(VAR d: Document): CARDINAL;
+
+(* Byte access *)
+PROCEDURE GetByte(VAR d: Document; off: CARDINAL): CARDINAL;
+PROCEDURE PutByte(VAR d: Document; off: CARDINAL; val: CARDINAL);
+PROCEDURE ReadBlock(VAR d: Document; off: CARDINAL;
+                    VAR buf: ARRAY OF CHAR; maxLen: CARDINAL): CARDINAL;
+PROCEDURE IsDirty(VAR d: Document): BOOLEAN;
+
+(* Cursor movement *)
+PROCEDURE MoveCursorLeft(VAR d: Document);
+PROCEDURE MoveCursorRight(VAR d: Document);
+PROCEDURE MoveCursorUp(VAR d: Document);
+PROCEDURE MoveCursorDown(VAR d: Document);
+PROCEDURE PageUp(VAR d: Document);
+PROCEDURE PageDown(VAR d: Document);
+PROCEDURE Home(VAR d: Document);
+PROCEDURE End(VAR d: Document);
+
+(* Selection *)
+PROCEDURE StartSelection(VAR d: Document);
+PROCEDURE ClearSelection(VAR d: Document);
+PROCEDURE HasSelection(VAR d: Document): BOOLEAN;
+PROCEDURE SelectionLow(VAR d: Document): CARDINAL;
+PROCEDURE SelectionHigh(VAR d: Document): CARDINAL;
+
+(* Editing *)
+PROCEDURE InputHexNibble(VAR d: Document; nibble: CARDINAL);
+PROCEDURE InputAscii(VAR d: Document; ch: CHAR);
+PROCEDURE InputBinBit(VAR d: Document; bit: CARDINAL);
+PROCEDURE ToggleMode(VAR d: Document);
+
+(* Undo/Redo *)
+PROCEDURE BeginGroup(VAR d: Document);
+PROCEDURE EndGroup(VAR d: Document);
+PROCEDURE Undo(VAR d: Document): BOOLEAN;
+PROCEDURE Redo(VAR d: Document): BOOLEAN;
+
+(* Scrolling *)
+PROCEDURE EnsureVisible(VAR d: Document);
+
+END Doc.

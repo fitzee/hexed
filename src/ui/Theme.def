@@ -1,0 +1,22 @@
+DEFINITION MODULE Theme;
+(* Color theme for the hex editor. *)
+
+TYPE
+  RGBA = RECORD r, g, b, a: INTEGER; END;
+  Colors = RECORD
+    bgPrimary, bgAlt, bgStatusBar: RGBA;
+    fgOffset, fgHex, fgAscii, fgNonPrint: RGBA;
+    fgStatus, fgStatusDim: RGBA;
+    cursorBg, cursorFg, selectionBg: RGBA;
+    dirty, separator: RGBA;
+    helpHeader, helpKey, helpDesc: RGBA;
+    sbTrack, sbThumb: RGBA;
+  END;
+
+VAR
+  Dark: Colors;
+
+(* Initialize theme values. Must be called once at startup. *)
+PROCEDURE Init;
+
+END Theme.

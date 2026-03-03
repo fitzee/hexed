@@ -1,0 +1,4 @@
+DEFINITION MODULE FOR "C" MacBridge;
+FROM SYSTEM IMPORT ADDRESS;
+PROCEDURE mac_show_about(name, version, copyright: ADDRESS);
+END MacBridge.

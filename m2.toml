@@ -1,0 +1,13 @@
+name=hexed
+version=1.0.0
+entry=src/app/Main.mod
+m2plus=false
+includes=src/app src/ui src/core
+
+[deps]
+m2gfx=path:/Users/mattfitz/dev/m2/libs/m2gfx
+m2bytes=path:/Users/mattfitz/dev/m2/libs/m2bytes
+
+[cc]
+extra-c=../m2/libs/m2gfx/src/gfx_bridge.c ../m2/libs/m2sys/m2sys.c platform/macos/mac_bridge.m
+frameworks=Cocoa

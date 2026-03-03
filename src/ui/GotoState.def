@@ -1,0 +1,14 @@
+DEFINITION MODULE GotoState;
+(* Shared goto-offset state — written by Keymap, read by View.
+   Exists to avoid circular dependency between Keymap and View. *)
+
+PROCEDURE SetGotoMode(on: BOOLEAN);
+PROCEDURE SetGotoBuf(VAR buf: ARRAY OF CHAR; len: INTEGER);
+PROCEDURE SetGotoError(e: BOOLEAN);
+
+PROCEDURE IsGotoMode(): BOOLEAN;
+PROCEDURE GetGotoBuf(VAR buf: ARRAY OF CHAR);
+PROCEDURE GetGotoLen(): INTEGER;
+PROCEDURE GotoError(): BOOLEAN;
+
+END GotoState.

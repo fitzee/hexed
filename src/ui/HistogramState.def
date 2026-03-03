@@ -1,0 +1,18 @@
+DEFINITION MODULE HistogramState;
+(* Shared histogram state — written by Keymap, read by View.
+   Exists to avoid circular dependency between Keymap and View. *)
+
+PROCEDURE SetShowHistogram(on: BOOLEAN);
+PROCEDURE IsShowHistogram(): BOOLEAN;
+
+PROCEDURE SetFrequency(byteVal: CARDINAL; count: CARDINAL);
+PROCEDURE GetFrequency(byteVal: CARDINAL): CARDINAL;
+PROCEDURE ClearFrequencies;
+
+PROCEDURE SetMaxFrequency(m: CARDINAL);
+PROCEDURE GetMaxFrequency(): CARDINAL;
+
+PROCEDURE SetTotalBytes(t: CARDINAL);
+PROCEDURE GetTotalBytes(): CARDINAL;
+
+END HistogramState.

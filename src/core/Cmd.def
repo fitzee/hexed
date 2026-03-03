@@ -1,0 +1,50 @@
+DEFINITION MODULE Cmd;
+(* Command history for undo/redo of byte edits. *)
+
+FROM ByteStore IMPORT Store;
+
+CONST
+  MaxCmds = 4096;
+
+TYPE
+  CmdKind = (CmdNone, CmdSetByte);
+
+  Command = RECORD
+    kind:   CmdKind;
+    offset: CARDINAL;
+    oldVal: CARDINAL;
+    newVal: CARDINAL;
+    group:  CARDINAL;
+  END;
+
+  CmdHistory = RECORD
+    cmds:     ARRAY [0..4095] OF Command;
+    count:    CARDINAL;
+    pos:      CARDINAL;  (* current position for undo/redo *)
+    curGroup: CARDINAL;  (* 0 = ungrouped *)
+    nextGroup: CARDINAL;
+  END;
+
+(* Initialize the command history. *)
+PROCEDURE Init(VAR h: CmdHistory);
+
+(* Begin/end a group — grouped commands undo/redo as one unit. *)
+PROCEDURE BeginGroup(VAR h: CmdHistory);
+PROCEDURE EndGroup(VAR h: CmdHistory);
+
+(* Record a byte change. *)
+PROCEDURE RecordSetByte(VAR h: CmdHistory; off, oldVal, newVal: CARDINAL);
+
+(* Undo the last command. Returns TRUE if something was undone. *)
+PROCEDURE Undo(VAR h: CmdHistory; VAR s: Store): BOOLEAN;
+
+(* Redo the last undone command. Returns TRUE if something was redone. *)
+PROCEDURE Redo(VAR h: CmdHistory; VAR s: Store): BOOLEAN;
+
+(* Can undo? *)
+PROCEDURE CanUndo(VAR h: CmdHistory): BOOLEAN;
+
+(* Can redo? *)
+PROCEDURE CanRedo(VAR h: CmdHistory): BOOLEAN;
+
+END Cmd.

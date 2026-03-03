@@ -1,0 +1,9 @@
+DEFINITION MODULE App;
+(* Application controller — owns the window, event loop,
+   and coordinates document + view + input. *)
+
+(* Run the hex editor with the given file path.
+   Blocks until the user quits. Returns 0 on success, 1 on error. *)
+PROCEDURE Run(path: ARRAY OF CHAR): INTEGER;
+
+END App.

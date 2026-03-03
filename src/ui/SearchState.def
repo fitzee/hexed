@@ -1,0 +1,16 @@
+DEFINITION MODULE SearchState;
+(* Shared search state — written by Keymap, read by View.
+   Exists to avoid circular dependency between Keymap and View. *)
+
+PROCEDURE SetSearchMode(on: BOOLEAN);
+PROCEDURE SetSearchBuf(VAR buf: ARRAY OF CHAR; len: INTEGER);
+PROCEDURE SetSearchIsHex(hex: BOOLEAN);
+PROCEDURE SetNotFound(nf: BOOLEAN);
+
+PROCEDURE IsSearchMode(): BOOLEAN;
+PROCEDURE GetSearchBuf(VAR buf: ARRAY OF CHAR);
+PROCEDURE GetSearchLen(): INTEGER;
+PROCEDURE GetSearchIsHex(): BOOLEAN;
+PROCEDURE SearchNotFound(): BOOLEAN;
+
+END SearchState.

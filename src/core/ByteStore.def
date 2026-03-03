@@ -1,0 +1,68 @@
+DEFINITION MODULE ByteStore;
+(* Abstract byte storage with two backends:
+   MemoryStore — entire file in a ByteBuf (files <= 64MB)
+   PagedStore  — lazy 4KB page loading with LRU cache (files > 64MB)
+
+   The active backend is selected by Open based on file size. *)
+
+FROM SYSTEM IMPORT ADDRESS;
+FROM ByteBuf IMPORT Buf;
+
+CONST
+  ThresholdLen = 67108864;  (* 64 * 1024 * 1024 *)
+  PageSize     = 4096;
+  MaxPages     = 256;       (* LRU cache: 256 pages = 1MB *)
+
+TYPE
+  Mode = (ModeMemory, ModePaged);
+
+  Page = RECORD
+    pageNo:  CARDINAL;
+    data:    ARRAY [0..4095] OF CHAR;
+    dirty:   BOOLEAN;
+    lastUse: CARDINAL;
+  END;
+
+  Store = RECORD
+    mode:     Mode;
+    fileLen:  CARDINAL;
+    filePath: ARRAY [0..1023] OF CHAR;
+    dirty:    BOOLEAN;
+    (* Memory backend *)
+    buf:      Buf;
+    (* Paged backend *)
+    pages:    ARRAY [0..255] OF Page;
+    nPages:   CARDINAL;
+    accessCt: CARDINAL;
+    lastSlot: CARDINAL;
+  END;
+
+(* Open a file into the store. Returns TRUE on success. *)
+PROCEDURE Open(VAR s: Store; path: ARRAY OF CHAR): BOOLEAN;
+
+(* Close the store, freeing resources. *)
+PROCEDURE Close(VAR s: Store);
+
+(* Return file length. *)
+PROCEDURE Len(VAR s: Store): CARDINAL;
+
+(* Get a single byte at offset. Returns 0 if out of bounds. *)
+PROCEDURE GetByte(VAR s: Store; off: CARDINAL): CARDINAL;
+
+(* Set a single byte at offset. No-op if out of bounds. *)
+PROCEDURE SetByte(VAR s: Store; off: CARDINAL; val: CARDINAL);
+
+(* Check dirty state. *)
+PROCEDURE IsDirty(VAR s: Store): BOOLEAN;
+
+(* Bulk read: copy up to maxLen bytes starting at off into buf.
+   Returns actual bytes copied. For paged mode, reads up to end
+   of current page (max PageSize bytes per call). *)
+PROCEDURE ReadBlock(VAR s: Store; off: CARDINAL;
+                    VAR buf: ARRAY OF CHAR; maxLen: CARDINAL): CARDINAL;
+
+(* Flush changes to disk. Returns TRUE on success. *)
+(* TODO: implement save support *)
+PROCEDURE Flush(VAR s: Store): BOOLEAN;
+
+END ByteStore.

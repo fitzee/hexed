@@ -1,0 +1,14 @@
+DEFINITION MODULE ExportState;
+(* Shared export state — written by Keymap, read by View.
+   Exists to avoid circular dependency between Keymap and View. *)
+
+PROCEDURE SetExportMode(on: BOOLEAN);
+PROCEDURE SetExportBuf(VAR buf: ARRAY OF CHAR; len: INTEGER);
+PROCEDURE SetExportError(e: BOOLEAN);
+
+PROCEDURE IsExportMode(): BOOLEAN;
+PROCEDURE GetExportBuf(VAR buf: ARRAY OF CHAR);
+PROCEDURE GetExportLen(): INTEGER;
+PROCEDURE ExportError(): BOOLEAN;
+
+END ExportState.

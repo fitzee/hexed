@@ -1,0 +1,12 @@
+DEFINITION MODULE FillState;
+(* Shared fill-selection state — written by Keymap, read by View.
+   Exists to avoid circular dependency between Keymap and View. *)
+
+PROCEDURE SetFillMode(on: BOOLEAN);
+PROCEDURE SetFillBuf(VAR buf: ARRAY OF CHAR; len: INTEGER);
+
+PROCEDURE IsFillMode(): BOOLEAN;
+PROCEDURE GetFillBuf(VAR buf: ARRAY OF CHAR);
+PROCEDURE GetFillLen(): INTEGER;
+
+END FillState.

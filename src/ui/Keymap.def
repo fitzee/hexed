@@ -1,0 +1,18 @@
+DEFINITION MODULE Keymap;
+(* Input handling — maps keyboard/mouse events to document actions.
+   Decoupled from rendering. *)
+
+FROM Doc IMPORT Document;
+FROM View IMPORT ViewState;
+
+TYPE
+  Action = (ActNone, ActQuit, ActRedraw, ActZoomIn, ActZoomOut);
+
+(* Process a single event. Returns the resulting action. *)
+PROCEDURE HandleEvent(evType: INTEGER; VAR d: Document; VAR v: ViewState): Action;
+
+(* Convert a key code to a hex nibble value (0..15).
+   Returns -1 if the key is not a hex digit. *)
+PROCEDURE KeyToNibble(keyCode: INTEGER): INTEGER;
+
+END Keymap.

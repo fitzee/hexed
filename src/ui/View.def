@@ -1,0 +1,62 @@
+DEFINITION MODULE View;
+(* Hex editor rendering — draws the hex view, ASCII column,
+   offset column, cursor, selection, and status bar.
+
+   All rendering scales with visible rows only.
+   No per-byte allocations in the render loop. *)
+
+FROM Gfx IMPORT Renderer;
+FROM Font IMPORT FontHandle;
+FROM Doc IMPORT Document;
+
+TYPE
+  Layout = RECORD
+    cellW:       INTEGER;  (* width of one character cell *)
+    rowH:        INTEGER;  (* height of one row *)
+    padX:        INTEGER;  (* left padding *)
+    padY:        INTEGER;  (* top padding *)
+    addrChars:   INTEGER;  (* 8 or 16 hex digits for address *)
+    addrColW:    INTEGER;  (* pixel width of address column *)
+    hexColX:     INTEGER;  (* x start of hex grid *)
+    hexColW:     INTEGER;  (* total pixel width of hex grid *)
+    asciiColX:   INTEGER;  (* x start of ASCII column *)
+    asciiColW:   INTEGER;  (* total pixel width of ASCII column *)
+    statusY:     INTEGER;  (* y of status bar top *)
+    winW:        INTEGER;  (* window width *)
+    winH:        INTEGER;  (* window height *)
+    visRows:     INTEGER;  (* number of visible data rows *)
+    statusH:     INTEGER;  (* status bar height *)
+    sbX:         INTEGER;  (* scrollbar x position *)
+    sbW:         INTEGER;  (* scrollbar width *)
+  END;
+
+  ViewState = RECORD
+    layout:  Layout;
+    font:    FontHandle;
+  END;
+
+(* Initialize the view with a font. Must be called after Gfx.Init. *)
+PROCEDURE Init(VAR v: ViewState; f: FontHandle; winW, winH: INTEGER);
+
+(* Recalculate layout after window resize. *)
+PROCEDURE Resize(VAR v: ViewState; winW, winH: INTEGER);
+
+(* Render the full frame. *)
+PROCEDURE Render(VAR v: ViewState; ren: Renderer; VAR d: Document);
+
+(* Convert mouse coordinates to a byte offset. Returns FALSE if outside data area. *)
+PROCEDURE HitTest(VAR v: ViewState; VAR d: Document;
+                  mx, my: INTEGER; VAR offset: CARDINAL): BOOLEAN;
+
+(* Forgiving hit test for drag selection — snaps to nearest byte, clamps to bounds. *)
+PROCEDURE DragHitTest(VAR v: ViewState; VAR d: Document;
+                      mx, my: INTEGER; VAR offset: CARDINAL): BOOLEAN;
+
+(* Hit test for binary row in inspector — returns bit position 0..7 if click was on a bit cell. *)
+PROCEDURE BinHitTest(VAR v: ViewState; VAR d: Document;
+                     mx, my: INTEGER; VAR bitPos: CARDINAL): BOOLEAN;
+
+(* Compute minimum window size for current font. *)
+PROCEDURE MinWindowSize(VAR v: ViewState; VAR minW, minH: INTEGER);
+
+END View.
