@@ -1,8 +1,9 @@
 # Hexed
 
-| | |
-|---|---|
-| ![Hexed with help panel and data inspector](imgs/hexed_ss1.png) | ![Hexed with byte frequency histogram](imgs/hexed_ss2.png) |
+<p>
+  <img src="imgs/hexed_ss1.png" width="49%" alt="Hexed with help panel and data inspector" />
+  <img src="imgs/hexed_ss2.png" width="49%" alt="Hexed with byte frequency histogram" />
+</p>
 
 A hex editor for macOS. Written in Modula-2, compiled and built with the [m2c](https://github.com/fitzee/m2c) compiler toolchain.
 
