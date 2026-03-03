@@ -1,5 +1,9 @@
 # Hexed
 
+| | |
+|---|---|
+| ![Hexed with help panel and data inspector](imgs/hexed_ss1.png) | ![Hexed with byte frequency histogram](imgs/hexed_ss2.png) |
+
 A hex editor for macOS. Written in Modula-2, compiled and built with the [m2c](https://github.com/fitzee/m2c) compiler toolchain.
 
 There's a popular claim that Modula-2 is a terrible choice for AI-assisted development -- that coding agents can't work with it, that the tooling isn't there, that you'd be fighting the model every step of the way. This project exists in part to push back on that idea. Every module in hexed was written with an AI coding agent (Claude Code), from the byte store and undo system up through the SDL2 rendering, search engine, data inspector, and ObjC bridge for the macOS About dialog. The agent handled Modula-2's strict type system, its separation of definition and implementation modules, C FFI bindings, and the kind of low-level byte manipulation that a hex editor demands. It didn't struggle with the language. It worked with it.
