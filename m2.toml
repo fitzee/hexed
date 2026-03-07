@@ -10,5 +10,8 @@ m2bytes
 m2sys
 
 [cc]
+extra-c=platform/platform_bridge.c
+
+[cc.feature.MACOS]
 extra-c=platform/macos/mac_bridge.m
 frameworks=Cocoa

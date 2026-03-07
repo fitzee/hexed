@@ -38,7 +38,9 @@ FROM HistogramState IMPORT SetShowHistogram, IsShowHistogram,
                            ClearFrequencies;
 FROM EndianState IMPORT ToggleEndianness;
 FROM Sys IMPORT m2sys_fopen, m2sys_fwrite_bytes, m2sys_fclose;
+(*$IF MACOS *)
 FROM MacBridge IMPORT mac_show_about;
+(*$END *)
 
 CONST
   HexDigit = "0123456789ABCDEF";
@@ -1279,8 +1281,10 @@ BEGIN
         ToggleEndianness;
         RETURN ActRedraw;
       ELSIF (key = ORD("i")) OR (key = ORD("I")) THEN
+        (*$IF MACOS *)
         mac_show_about(ADR("hexed"), ADR("1.0.0"),
                        ADR("A hex editor built with Modula-2"));
+        (*$END *)
         RETURN ActNone;
       END;
       RETURN ActNone;

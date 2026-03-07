@@ -3,7 +3,7 @@
 # Usage: bash build_app.sh [--dmg]
 set -e
 
-m2c build
+m2c build --feature MACOS
 
 APP=".m2c/Hexed.app"
 rm -rf "$APP"

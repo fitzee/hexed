@@ -19,13 +19,16 @@ FROM View IMPORT ViewState, Init AS ViewInit, Resize, Render, MinWindowSize;
 FROM Keymap IMPORT HandleEvent, Action, ActQuit, ActRedraw, ActZoomIn, ActZoomOut;
 FROM Theme IMPORT Init AS ThemeInit;
 FROM InOut IMPORT WriteString, WriteLn;
+FROM FontResolve IMPORT Resolve AS ResolveFont;
 
 CONST
   InitWidth  = 1100;
   InitHeight = 700;
-  FontPath   = "/System/Library/Fonts/Menlo.ttc";
   LogicalMin = 18;
   LogicalMax = 28;
+
+VAR
+  fontPath: ARRAY [0..255] OF CHAR;
 
 PROCEDURE Run(path: ARRAY OF CHAR): INTEGER;
 VAR
@@ -59,13 +62,22 @@ BEGIN
     RETURN 1;
   END;
 
+  (* Resolve font path *)
+  IF NOT ResolveFont(fontPath) THEN
+    WriteString("error: no suitable font found"); WriteLn;
+    WriteString("  Place DejaVuSansMono.ttf in resources/fonts/"); WriteLn;
+    WriteString("  or install a monospace font package (e.g. fonts-dejavu-core)"); WriteLn;
+    QuitFont; Quit;
+    RETURN 1;
+  END;
+
   (* Open font at default logical size *)
   minPhys := LogicalMin * DpiScale();
   maxPhys := LogicalMax * DpiScale();
   physSize := minPhys + 2;
-  font := OpenPhysical(FontPath, physSize);
+  font := OpenPhysical(fontPath, physSize);
   IF font = NIL THEN
-    WriteString("error: failed to open font "); WriteString(FontPath); WriteLn;
+    WriteString("error: failed to open font "); WriteString(fontPath); WriteLn;
     QuitFont; Quit;
     RETURN 1;
   END;
@@ -142,7 +154,7 @@ BEGIN
       IF NOT zoomHeld THEN
         IF (zoomDir > 0) AND (physSize < maxPhys) THEN
           INC(physSize);
-          newFont := OpenPhysical(FontPath, physSize);
+          newFont := OpenPhysical(fontPath, physSize);
           IF newFont # NIL THEN
             FontClose(font); font := newFont;
             SetHinting(font, HINT_MONO);
@@ -157,7 +169,7 @@ BEGIN
         END;
         IF (zoomDir < 0) AND (physSize > minPhys) THEN
           DEC(physSize);
-          newFont := OpenPhysical(FontPath, physSize);
+          newFont := OpenPhysical(fontPath, physSize);
           IF newFont # NIL THEN
             FontClose(font); font := newFont;
             SetHinting(font, HINT_MONO);

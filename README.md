@@ -5,7 +5,7 @@
   <img src="imgs/hexed_ss2.png" width="49%" alt="Hexed with byte frequency histogram" />
 </p>
 
-A hex editor for macOS. Written in Modula-2, compiled and built with the [m2c](https://github.com/fitzee/m2c) compiler toolchain.
+A hex editor for macOS and Linux. Written in Modula-2, compiled and built with the [m2c](https://github.com/fitzee/m2c) compiler toolchain.
 
 There's a popular claim that Modula-2 is a terrible choice for AI-assisted development -- that coding agents can't work with it, that the tooling isn't there, that you'd be fighting the model every step of the way. This project exists in part to push back on that idea. Every module in hexed was written with an AI coding agent (Claude Code), from the byte store and undo system up through the SDL2 rendering, search engine, data inspector, and ObjC bridge for the macOS About dialog. The agent handled Modula-2's strict type system, its separation of definition and implementation modules, C FFI bindings, and the kind of low-level byte manipulation that a hex editor demands. It didn't struggle with the language. It worked with it.
 
@@ -15,10 +15,16 @@ Hexed displays files as hex, ASCII, and binary simultaneously, with a data inspe
 
 ## Building
 
-You need [m2c](https://github.com/fitzee/m2c) installed, plus SDL2 and SDL2_ttf:
+You need [m2c](https://github.com/fitzee/m2c) installed, plus SDL2 and SDL2_ttf.
 
+**macOS:**
 ```
 brew install sdl2 sdl2_ttf
+```
+
+**Debian/Ubuntu:**
+```
+sudo apt install libsdl2-dev libsdl2-ttf-dev
 ```
 
 Then build and run:
@@ -27,6 +33,18 @@ Then build and run:
 m2c build
 .m2c/bin/hexed somefile.bin
 ```
+
+On macOS, use `--feature MACOS` to enable the native About dialog and Cocoa integration:
+
+```
+m2c build --feature MACOS
+```
+
+### Font
+
+Hexed bundles DejaVu Sans Mono in `resources/fonts/` for consistent cross-platform rendering. If the bundled font is not found, it falls back to platform-specific system fonts (Menlo on macOS, DejaVu/Liberation/Ubuntu Mono on Linux). If no font is found, the app exits with a message explaining how to provide one.
+
+### macOS App Bundle
 
 To build a macOS `.app` bundle:
 
@@ -65,7 +83,7 @@ The data inspector panel displays the byte at the cursor in hex, decimal, octal,
 | Arrows | Move by one byte or row |
 | Page Up / Down | Move by one page |
 | Home / End | Jump to row start / end |
-| Cmd+Up / Down | Jump to file start / end |
+| Cmd+Up / Down (Ctrl on Linux) | Jump to file start / end |
 | Scroll wheel | Scroll view without moving cursor |
 
 Click any byte in the hex or ASCII columns to jump there. Click and drag or shift+arrow to select ranges.
@@ -84,23 +102,25 @@ Hex mode takes two keystrokes per byte (high nibble, low nibble). Binary mode is
 
 ### Commands
 
+Cmd on macOS, Ctrl on Linux.
+
 | Key | Description |
 |-----|-------------|
-| Cmd+S | Save |
-| Cmd+Z | Undo |
-| Cmd+Y | Redo |
-| Cmd+F | Search -- hex or ASCII pattern, Tab to switch; Return to find, Escape to cancel |
-| Cmd+G | Find next match |
-| Cmd+R | Replace -- three phases: search, replacement, confirm (Y/N/A/Escape) |
-| Cmd+L | Go to hex offset |
-| Cmd+C | Copy selection as hex pairs (`4F A3 FF`) |
-| Cmd+V | Paste -- auto-detects hex pairs vs raw ASCII; overwrites in place |
-| Cmd+E | Fill selection with a hex byte value |
-| Cmd+D | Export selection to a file |
-| Cmd+B | Toggle byte frequency histogram |
-| Cmd+T | Toggle little-endian / big-endian interpretation |
-| Cmd+Plus | Zoom in |
-| Cmd+Minus | Zoom out |
+| Cmd/Ctrl+S | Save |
+| Cmd/Ctrl+Z | Undo |
+| Cmd/Ctrl+Y | Redo |
+| Cmd/Ctrl+F | Search -- hex or ASCII pattern, Tab to switch; Return to find, Escape to cancel |
+| Cmd/Ctrl+G | Find next match |
+| Cmd/Ctrl+R | Replace -- three phases: search, replacement, confirm (Y/N/A/Escape) |
+| Cmd/Ctrl+L | Go to hex offset |
+| Cmd/Ctrl+C | Copy selection as hex pairs (`4F A3 FF`) |
+| Cmd/Ctrl+V | Paste -- auto-detects hex pairs vs raw ASCII; overwrites in place |
+| Cmd/Ctrl+E | Fill selection with a hex byte value |
+| Cmd/Ctrl+D | Export selection to a file |
+| Cmd/Ctrl+B | Toggle byte frequency histogram |
+| Cmd/Ctrl+T | Toggle little-endian / big-endian interpretation |
+| Cmd/Ctrl+Plus | Zoom in |
+| Cmd/Ctrl+Minus | Zoom out |
 
 All multi-byte operations (paste, fill, replace-all) are grouped into a single undo step. Replace overwrites in place and never changes the file size. The histogram shows all 256 byte values color-coded from blue (rare) to red (frequent), with the cursor byte highlighted and its count/percentage in a footer.
 
@@ -124,10 +144,12 @@ Presentation and input handling. Depends on Core and the m2gfx graphics library.
 
 - **View** — All rendering. Draws the hex grid, ASCII column, offset addresses, data inspector, histogram, status bar, search/replace overlays, and scrollbar. Converts byte values to hex display using a `HexDigit` constant string indexed by `DIV 16` / `MOD 16`.
 - **Keymap** — Event dispatch. Maps keyboard and mouse events to document operations. Handles modal input states (search, goto, fill, replace, export). Computes the byte frequency histogram using bulk block reads.
-- **App** — Main loop. Initializes SDL2, loads fonts, runs the event/render loop at 60fps with idle-wait, handles window resize.
+- **App** — Main loop. Initializes SDL2, resolves and loads fonts, runs the event/render loop at 60fps with idle-wait, handles window resize.
 - **Theme** — Color palette and layout constants. Dark theme with configurable zoom.
 - **State modules** (SearchState, GotoState, FillState, ReplaceState, ExportState, HistogramState, EndianState) — Shared mutable state for modal UI. These exist to break what would otherwise be circular dependencies between Keymap (writes state) and View (reads state).
-- **MacBridge** — ObjC FFI for the native macOS About dialog and file picker.
+- **FontResolve** — Cross-platform font resolution. Checks bundled font, then platform-specific system paths.
+- **Platform** — C FFI for platform detection (`platform_is_macos`).
+- **MacBridge** — ObjC FFI for the native macOS About dialog (macOS only, gated by `(*$IF MACOS *)`).
 
 ### App (`src/app/`)
 

@@ -887,8 +887,13 @@ BEGIN
   IF NOT HP(ren, v.font, helpX, row, "PgDn", "Page down") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "Home", "Row start") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "End", "Row end") THEN RETURN; END;
+  (*$IF MACOS *)
   IF NOT HP(ren, v.font, helpX, row, "⌘Up", "File start") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "⌘Down", "File end") THEN RETURN; END;
+  (*$ELSE *)
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+Up", "File start") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+Dn", "File end") THEN RETURN; END;
+  (*$END *)
 
   IF NOT HPHead(ren, v.font, helpX, row, "EDITING") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "Tab", "Hex/ASCII") THEN RETURN; END;
@@ -896,6 +901,7 @@ BEGIN
   IF NOT HP(ren, v.font, helpX, row, "Type", "ASCII input") THEN RETURN; END;
 
   IF NOT HPHead(ren, v.font, helpX, row, "COMMANDS") THEN RETURN; END;
+  (*$IF MACOS *)
   IF NOT HP(ren, v.font, helpX, row, "⌘S", "Save") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "⌘Z", "Undo") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "⌘Y", "Redo") THEN RETURN; END;
@@ -912,6 +918,24 @@ BEGIN
   IF NOT HP(ren, v.font, helpX, row, "⌘B", "Histogram") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "⌘T", "Endian") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "⌘I", "About") THEN RETURN; END;
+  (*$ELSE *)
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+S", "Save") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+Z", "Undo") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+Y", "Redo") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl++", "Zoom in") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+-", "Zoom out") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+F", "Search") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+G", "Find next") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+R", "Replace") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+L", "Go to") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+C", "Copy") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+V", "Paste") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+E", "Fill") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+D", "Export") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+B", "Histogram") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+T", "Endian") THEN RETURN; END;
+  IF NOT HP(ren, v.font, helpX, row, "Ctrl+I", "About") THEN RETURN; END;
+  (*$END *)
   IF NOT HP(ren, v.font, helpX, row, "Esc", "Deselect") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "Drag", "Select") THEN RETURN; END;
   IF NOT HP(ren, v.font, helpX, row, "Wheel", "Scroll") THEN RETURN; END;
