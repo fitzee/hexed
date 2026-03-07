@@ -24,8 +24,8 @@ FROM FontResolve IMPORT Resolve AS ResolveFont;
 CONST
   InitWidth  = 1100;
   InitHeight = 700;
-  LogicalMin = 18;
-  LogicalMax = 28;
+  LogicalMin = 12;
+  LogicalMax = 24;
 
 VAR
   fontPath: ARRAY [0..255] OF CHAR;
