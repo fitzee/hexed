@@ -921,6 +921,34 @@ END RenderHelpPanel;
 
 (* ── Histogram panel ────────────────────────────────── *)
 
+(* Integer square root via Newton's method. *)
+PROCEDURE ISqrt(n: CARDINAL): CARDINAL;
+VAR x, y: CARDINAL;
+BEGIN
+  IF n = 0 THEN RETURN 0; END;
+  x := n;
+  y := (x + 1) DIV 2;
+  WHILE y < x DO
+    x := y;
+    y := (x + n DIV x) DIV 2;
+  END;
+  RETURN x;
+END ISqrt;
+
+(* Sqrt-scale mapping: returns 0..100 based on sqrt(val)/sqrt(max).
+   Gentler than log — spreads skewed distributions without crushing
+   uniform ones into a single color. *)
+PROCEDURE SqrtScale(val, max: CARDINAL): INTEGER;
+VAR sVal, sMax: CARDINAL;
+BEGIN
+  IF (val = 0) OR (max = 0) THEN RETURN 0; END;
+  IF val >= max THEN RETURN 100; END;
+  sVal := ISqrt(val);
+  sMax := ISqrt(max);
+  IF sMax = 0 THEN RETURN 0; END;
+  RETURN INTEGER(sVal * 100 DIV sMax);
+END SqrtScale;
+
 PROCEDURE ComputeBarColor(fraction: INTEGER; VAR r, g, b: INTEGER);
 (* 5-stop color ramp: blue → cyan → green → yellow → red
    fraction is 0..100 *)
@@ -1022,9 +1050,9 @@ BEGIN
         SetBlendMode(ren, BLEND_NONE);
       END;
       IF (count > 0) AND (maxF > 0) THEN
-        barW := INTEGER(count) * maxBarW DIV INTEGER(maxF);
+        fraction := SqrtScale(count, maxF);
+        barW := fraction * maxBarW DIV 100;
         IF barW < 1 THEN barW := 1; END;
-        fraction := INTEGER(count) * 100 DIV INTEGER(maxF);
         ComputeBarColor(fraction, cr, cg, cb);
         SetColor(ren, cr, cg, cb, 255);
         FillRect(ren, helpX, y, barW, barH);

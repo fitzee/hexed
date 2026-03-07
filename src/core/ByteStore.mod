@@ -289,11 +289,12 @@ VAR
   hnd: INTEGER;
   i, pgOff: CARDINAL;
 BEGIN
-  (* For each dirty page, rewrite it to disk *)
+  (* Open file once, seek to each dirty page, write, then close *)
+  hnd := m2sys_fopen(ADR(s.filePath), ADR("r+b"));
+  IF hnd < 0 THEN RETURN FALSE; END;
+
   FOR i := 0 TO s.nPages - 1 DO
     IF s.pages[i].dirty THEN
-      hnd := m2sys_fopen(ADR(s.filePath), ADR("r+b"));
-      IF hnd < 0 THEN RETURN FALSE; END;
       pgOff := s.pages[i].pageNo * PageSize;
       IF m2sys_fseek(hnd, LONGINT(pgOff), 0) < 0 THEN
         m2sys_fclose(hnd);
@@ -303,10 +304,11 @@ BEGIN
         m2sys_fclose(hnd);
         RETURN FALSE;
       END;
-      m2sys_fclose(hnd);
       s.pages[i].dirty := FALSE;
     END;
   END;
+
+  m2sys_fclose(hnd);
   s.dirty := FALSE;
   RETURN TRUE;
 END PagedFlush;

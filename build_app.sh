@@ -33,6 +33,9 @@ if [ -f platform/macos/hexed.icns ]; then
     cp platform/macos/hexed.icns "$APP/Contents/Resources/"
 fi
 
+# Ad-hoc codesign so macOS doesn't block the app
+codesign --force --deep -s - "$APP"
+
 echo "Built: $APP"
 
 # --- DMG packaging ---
