@@ -1,0 +1,4 @@
+DEFINITION MODULE FOR "C" Platform;
+(* Platform detection — returns 1 on macOS, 0 otherwise. *)
+PROCEDURE platform_is_macos(): INTEGER;
+END Platform.
