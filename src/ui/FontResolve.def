@@ -1,0 +1,10 @@
+DEFINITION MODULE FontResolve;
+(* Resolves a monospace font path across macOS and Linux.
+   Checks bundled font first, then platform-specific system paths. *)
+
+(* Find the first available monospace font.
+   Sets path to the resolved font file and returns TRUE.
+   Returns FALSE if no suitable font is found. *)
+PROCEDURE Resolve(VAR path: ARRAY OF CHAR): BOOLEAN;
+
+END FontResolve.
