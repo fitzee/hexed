@@ -5,7 +5,7 @@
   <img src="imgs/hexed_ss2.png" width="49%" alt="Hexed with byte frequency histogram" />
 </p>
 
-A hex editor for macOS and Linux. Written in Modula-2, compiled and built with the [m2c](https://github.com/fitzee/m2c) compiler toolchain.
+A hex editor for macOS and Linux. Written in Modula-2, compiled and built with the [mx](https://github.com/fitzee/mx) compiler toolchain.
 
 There's a popular claim that Modula-2 is a terrible choice for AI-assisted development -- that coding agents can't work with it, that the tooling isn't there, that you'd be fighting the model every step of the way. This project exists in part to push back on that idea. Every module in hexed was written with an AI coding agent (Claude Code), from the byte store and undo system up through the SDL2 rendering, search engine, data inspector, and ObjC bridge for the macOS About dialog. The agent handled Modula-2's strict type system, its separation of definition and implementation modules, C FFI bindings, and the kind of low-level byte manipulation that a hex editor demands. It didn't struggle with the language. It worked with it.
 
@@ -15,7 +15,7 @@ Hexed displays files as hex, ASCII, and binary simultaneously, with a data inspe
 
 ## Building
 
-You need [m2c](https://github.com/fitzee/m2c) installed, plus SDL2 and SDL2_ttf.
+You need [mx](https://github.com/fitzee/mx) installed, plus SDL2 and SDL2_ttf.
 
 **macOS:**
 ```
@@ -30,14 +30,14 @@ sudo apt install libsdl2-dev libsdl2-ttf-dev
 Then build and run:
 
 ```
-m2c build
-.m2c/bin/hexed somefile.bin
+mx build
+.mx/bin/hexed somefile.bin
 ```
 
 On macOS, use `--feature MACOS` to enable the native About dialog and Cocoa integration:
 
 ```
-m2c build --feature MACOS
+mx build --feature MACOS
 ```
 
 ### Font
@@ -52,10 +52,10 @@ To build a macOS `.app` bundle:
 bash build_app.sh
 ```
 
-This creates `.m2c/Hexed.app`. You can drag files onto it in Finder, use "Open With", or double-click it to get a file picker dialog. You can also launch it from the terminal:
+This creates `.mx/Hexed.app`. You can drag files onto it in Finder, use "Open With", or double-click it to get a file picker dialog. You can also launch it from the terminal:
 
 ```
-open .m2c/Hexed.app --args somefile.bin
+open .mx/Hexed.app --args somefile.bin
 ```
 
 To package a distributable DMG:
@@ -64,7 +64,7 @@ To package a distributable DMG:
 bash build_app.sh --dmg
 ```
 
-This creates `.m2c/Hexed-1.0.0.dmg` with the standard drag-to-Applications layout.
+This creates `.mx/Hexed-1.0.0.dmg` with the standard drag-to-Applications layout.
 
 ## The Interface
 
@@ -175,4 +175,4 @@ Presentation and input handling. Depends on Core and the m2gfx graphics library.
 
 ## License
 
-MIT
+Copyright (c) 2026 Matt Fitzgerald. Licensed under the [MIT License](LICENSE).

@@ -3,13 +3,13 @@
 # Usage: bash build_app.sh [--dmg]
 set -e
 
-m2c build --feature MACOS
+mx build --feature MACOS
 
-APP=".m2c/Hexed.app"
+APP=".mx/Hexed.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
-cp .m2c/bin/hexed "$APP/Contents/MacOS/hexed-bin"
+cp .mx/bin/hexed "$APP/Contents/MacOS/hexed-bin"
 cp platform/macos/Info.plist "$APP/Contents/"
 
 # Shell wrapper: handles "open file.bin" drag-and-drop and Open With
@@ -42,8 +42,8 @@ echo "Built: $APP"
 if [ "$1" = "--dmg" ]; then
     VERSION=$(grep '^version=' m2.toml | cut -d= -f2)
     DMG_NAME="Hexed-${VERSION}.dmg"
-    DMG_PATH=".m2c/$DMG_NAME"
-    STAGING=".m2c/dmg_staging"
+    DMG_PATH=".mx/$DMG_NAME"
+    STAGING=".mx/dmg_staging"
 
     rm -rf "$STAGING" "$DMG_PATH"
     mkdir -p "$STAGING"
