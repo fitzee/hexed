@@ -62,7 +62,6 @@ PROCEDURE ReadBlock(VAR s: Store; off: CARDINAL;
                     VAR buf: ARRAY OF CHAR; maxLen: CARDINAL): CARDINAL;
 
 (* Flush changes to disk. Returns TRUE on success. *)
-(* TODO: implement save support *)
 PROCEDURE Flush(VAR s: Store): BOOLEAN;
 
 END ByteStore.

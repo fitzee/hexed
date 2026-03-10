@@ -51,6 +51,35 @@ END MemClose;
 
 (* ── Paged backend ──────────────────────────────────── *)
 
+PROCEDURE ZeroPage(VAR pg: Page);
+VAR i: CARDINAL;
+BEGIN
+  FOR i := 0 TO PageSize - 1 DO
+    pg.data[i] := CHR(0);
+  END;
+END ZeroPage;
+
+PROCEDURE PagedWriteSinglePage(VAR s: Store; VAR pg: Page): BOOLEAN;
+VAR
+  hnd: INTEGER;
+  pgOff: CARDINAL;
+BEGIN
+  hnd := m2sys_fopen(ADR(s.filePath), ADR("r+b"));
+  IF hnd < 0 THEN RETURN FALSE; END;
+  pgOff := pg.pageNo * PageSize;
+  IF m2sys_fseek(hnd, LONGINT(pgOff), 0) < 0 THEN
+    m2sys_fclose(hnd);
+    RETURN FALSE;
+  END;
+  IF m2sys_fwrite_bytes(hnd, ADR(pg.data), PageSize) # PageSize THEN
+    m2sys_fclose(hnd);
+    RETURN FALSE;
+  END;
+  m2sys_fclose(hnd);
+  pg.dirty := FALSE;
+  RETURN TRUE;
+END PagedWriteSinglePage;
+
 PROCEDURE PagedLoadPage(VAR s: Store; pageNo: CARDINAL; VAR pg: Page);
 VAR
   hnd: INTEGER;
@@ -63,11 +92,15 @@ BEGIN
   off := pageNo * PageSize;
 
   hnd := m2sys_fopen(ADR(s.filePath), ADR("rb"));
-  IF hnd < 0 THEN RETURN; END;
+  IF hnd < 0 THEN
+    ZeroPage(pg);
+    RETURN;
+  END;
 
   IF off > 0 THEN
     IF m2sys_fseek(hnd, LONGINT(off), 0) < 0 THEN
       m2sys_fclose(hnd);
+      ZeroPage(pg);
       RETURN;
     END;
   END;
@@ -119,7 +152,9 @@ BEGIN
     INC(s.nPages);
   ELSE
     slot := FindLRU(s);
-    (* TODO: flush dirty page before eviction *)
+    IF s.pages[slot].dirty THEN
+      PagedWriteSinglePage(s, s.pages[slot]);
+    END;
   END;
   PagedLoadPage(s, pageNo, s.pages[slot]);
   s.lastSlot := slot;
@@ -259,20 +294,20 @@ END IsDirty;
 PROCEDURE MemFlush(VAR s: Store): BOOLEAN;
 VAR
   hnd: INTEGER;
-  tmp: ARRAY [0..4095] OF CHAR;
-  pos, remaining, chunk, i: CARDINAL;
+  base: ADDRESS;
+  pos, remaining, chunk: CARDINAL;
 BEGIN
   hnd := m2sys_fopen(ADR(s.filePath), ADR("wb"));
   IF hnd < 0 THEN RETURN FALSE; END;
 
+  base := DataPtr(s.buf);
   pos := 0;
   remaining := s.fileLen;
   WHILE remaining > 0 DO
     IF remaining > 4096 THEN chunk := 4096 ELSE chunk := remaining END;
-    FOR i := 0 TO chunk - 1 DO
-      tmp[i] := CHR(BufGetByte(s.buf, pos + i));
-    END;
-    IF m2sys_fwrite_bytes(hnd, ADR(tmp), INTEGER(chunk)) # INTEGER(chunk) THEN
+    IF m2sys_fwrite_bytes(hnd,
+         ADDRESS(LONGCARD(base) + LONGCARD(pos)),
+         INTEGER(chunk)) # INTEGER(chunk) THEN
       m2sys_fclose(hnd);
       RETURN FALSE;
     END;

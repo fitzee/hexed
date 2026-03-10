@@ -173,6 +173,18 @@ Presentation and input handling. Depends on Core and the m2gfx graphics library.
 
 **C FFI via `DEFINITION MODULE FOR "C"`.** Sys.def declares C functions with Modula-2 signatures. The compiler emits direct C calls with no wrapper overhead. This is used for file I/O (`m2sys`), graphics (`gfx_bridge`), and the macOS native bridge (`mac_bridge`).
 
+## Version History
+
+### 1.0.1
+
+- Fixed dirty page eviction in paged backend — dirty pages are now flushed to disk before LRU eviction, preventing silent data loss on large files
+- Optimized MemFlush to write directly from ByteBuf backing memory via DataPtr instead of byte-by-byte copy through a temp array
+- Hardened PagedLoadPage to zero-fill page data on I/O failure, ensuring callers never read uninitialized memory
+
+### 1.0.0
+
+- Initial release
+
 ## License
 
 Copyright (c) 2026 Matt Fitzgerald. Licensed under the [MIT License](LICENSE).
