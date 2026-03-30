@@ -1,7 +1,7 @@
 name=hexed
 version=1.0.1
 entry=src/app/Main.mod
-m2plus=false
+edition=m2plus
 includes=src/app src/ui src/core
 
 [deps]
